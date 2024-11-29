@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -27,7 +27,6 @@ SECRET_KEY = 'django-insecure-g0o(lbmr4n_dm3xrjh)@9$6wyv%4)=n)bli8j7n24ujay4tq@z
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -76,18 +75,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'stay_connected.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
+DATABASE_HOST = config("POSTGRES_HOST")
+DATABASE_USER = config('POSTGRES_USER')
+DATABASE_PASSWORD = config('POSTGRES_PASSWORD')
+DATABASE_NAME = config("POSTGRES_DB")
+DATABASE_PORT = config("POSTGRES_PORT")
+DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql", "NAME": DATABASE_NAME,
+                         "USER": DATABASE_USER, "PASSWORD": DATABASE_PASSWORD,
+                         "HOST": DATABASE_HOST, "PORT": DATABASE_PORT}}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -141,7 +138,6 @@ LOGGING = {
     },
 }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -152,7 +148,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -203,4 +198,3 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
-
