@@ -1,5 +1,5 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics, filters
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from posts.serializers import QuestionSerializer, TagSerializer, CreateAnswerSerializer, AnswerSerializer
@@ -63,3 +63,10 @@ class AnswerViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
+@extend_schema(tags=["Searchi"])
+class QuestioList(generics.ListAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['tags__name']
