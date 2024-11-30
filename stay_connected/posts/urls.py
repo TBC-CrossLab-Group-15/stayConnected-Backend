@@ -9,6 +9,6 @@ router.register('answers', AnswerViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('/tags/', TagListing.as_view(), name='tags'),
-    path('/search/',QuestionList.as_view(),name='search')
+    path('tags/', TagListing.as_view(), name='tags'),
+    path('search/',QuestionList.as_view(),name='search')
 ]
