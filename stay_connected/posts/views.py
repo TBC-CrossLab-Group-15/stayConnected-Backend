@@ -2,7 +2,8 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status, generics, filters
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from posts.serializers import QuestionSerializer, TagSerializer, CreateAnswerSerializer, AnswerSerializer
+from posts.serializers import TagSerializer, CreateAnswerSerializer, AnswerSerializer, \
+    CreateQuestionSerializer, ListQuestionSerializer
 from rest_framework.decorators import action, permission_classes
 from posts.models import Question, Tag, Answer
 from rest_framework.response import Response
@@ -10,10 +11,14 @@ from .permissions import IsOwnerOrReadOnly
 from .serializer_utils import SerializerFactory
 
 # Create your views here.
-@extend_schema(tags=['postebi'])
+@extend_schema(tags=['Postebi'])
 class CreateQuestionViewset(viewsets.ModelViewSet):
-    serializer_class = QuestionSerializer
-    queryset = Question.objects.all()
+    serializer_class = SerializerFactory(
+        create=CreateQuestionSerializer,
+        list=ListQuestionSerializer,
+        default=ListQuestionSerializer
+    )
+    queryset = Question.objects.select_related('user').prefetch_related('tags')
 
     def get_permissions(self):
         if self.action in ("update", "destroy"):
@@ -25,14 +30,8 @@ class CreateQuestionViewset(viewsets.ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
-    @action(detail=False, methods=['post'])
-    def create_question(self,request):
-        serializer = QuestionSerializer(data=request.data)
-        if serializer.is_valid():
-            question = serializer.save(user=request.user)
-            return Response({"question": QuestionSerializer(question).data})
-        else:
-            return Response(serializer.errors, status=400)
+    def perform_create(self, serializer):
+        serializer.save(user=request.user)
 
 
 @extend_schema(tags=["Tagebi"])
@@ -60,13 +59,15 @@ class AnswerViewSet(viewsets.ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
 
 @extend_schema(tags=["Searchi"])
-class QuestioList(generics.ListAPIView):
+class QuestionList(generics.ListAPIView):
     queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
+    serializer_class = ListQuestionSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['tags__name']
+    permission_classes = [AllowAny]

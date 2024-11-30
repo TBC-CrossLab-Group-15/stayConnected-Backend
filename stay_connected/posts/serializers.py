@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from user.serializers import UserStatSerializer
 from posts.models import Question, Tag, Answer
 
 
@@ -8,21 +9,19 @@ class TagSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class QuestionSerializer(serializers.ModelSerializer):
+class CreateQuestionSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Tag.objects.all()
+        queryset=Tag.objects.all().filter()
     )
-
     user = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Question
         fields = ['id', 'title', 'text', 'tags', 'user']
-        read_only_fields = ['user']
 
     def create(self, validated_data):
-            # Automatically set the user from the request context
+        # Automatically set the user from the request context
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['user'] = request.user
@@ -36,6 +35,18 @@ class CreateAnswerSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
+    user = UserStatSerializer()
+
     class Meta:
         model = Answer
         fields = '__all__'
+
+
+class ListQuestionSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True)
+    answers = AnswerSerializer(many=True)
+    user = UserStatSerializer()
+
+    class Meta:
+        model = Question
+        fields = "__all__"

@@ -8,6 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from user.serializers import UserSerializer, UserLoginSerializer
 from drf_spectacular.utils import extend_schema
 
+
 # Create your views here.
 @extend_schema(tags=["Auth"])
 class RegisterView(APIView):
@@ -18,13 +19,12 @@ class RegisterView(APIView):
     serializer_class = UserSerializer
     permission_classes = (AllowAny,)
 
-    def post(self,request,*args,**kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(['POST'])
@@ -48,9 +48,7 @@ def login_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-@extend_schema( tags=["Auth"])
+@extend_schema(tags=["Auth"])
 class LoginView(TokenObtainPairView):
     serializer_class = TokenObtainPairView.serializer_class
 

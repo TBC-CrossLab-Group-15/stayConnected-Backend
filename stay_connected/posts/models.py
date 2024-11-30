@@ -4,6 +4,7 @@ from user.models import User
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
+
 class Tag(models.Model):
     name = models.CharField(max_length=200, verbose_name=_("Name"))
 
@@ -15,7 +16,7 @@ class Question(models.Model):
     title = models.TextField(null=False, verbose_name=_("Title"))
     text = models.TextField(null=True, verbose_name=_("Text"))
     tags = models.ManyToManyField(Tag, related_name="questions", verbose_name=_("Tags"))
-    user = models.ForeignKey(User,on_delete=models.CASCADE, verbose_name=_("Author"))
+    user = models.ForeignKey(User, related_name='questions', on_delete=models.CASCADE, verbose_name=_("Author"))
     create_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Create date"))
 
     def __str__(self):
@@ -32,4 +33,3 @@ class Answer(models.Model):
 
     def __str__(self):
         return self.text[:25]
-
