@@ -1,12 +1,14 @@
 from django.contrib.auth import authenticate, login
-from rest_framework import status
+from rest_framework import status, generics, filters
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from user.serializers import UserSerializer, UserLoginSerializer
+from user.serializers import UserSerializer, UserLoginSerializer,UserLeaderBoardSerializer
 from drf_spectacular.utils import extend_schema
+from user.models import User
+
 
 
 # Create your views here.
@@ -56,3 +58,12 @@ class LoginView(TokenObtainPairView):
 @extend_schema(tags=["Auth"])
 class RefreshTokenCustomView(TokenRefreshView):
     serializer_class = TokenRefreshView.serializer_class
+
+
+@extend_schema(tags=["Leaderboard"])
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserLeaderBoardSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['rating']
+    ordering = ['-rating']
