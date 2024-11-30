@@ -3,9 +3,9 @@ from rest_framework import viewsets, status, generics, filters
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from posts.serializers import TagSerializer, CreateAnswerSerializer, AnswerSerializer, \
-    CreateQuestionSerializer, ListQuestionSerializer
+    CreateQuestionSerializer, ListQuestionSerializer, UpdateAnswerSerializer
 from rest_framework.decorators import action, permission_classes
-from posts.models import Question, Tag, Answer
+from posts.models import Question, Tag, Answer, Like
 from rest_framework.response import Response
 from .permissions import IsOwnerOrReadOnly
 from .serializer_utils import SerializerFactory
@@ -30,7 +30,7 @@ class CreateQuestionViewset(viewsets.ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
-    def perform_create(self, serializer):
+    def perform_create(self,serializer):
         serializer.save(user=request.user)
 
 
@@ -50,8 +50,10 @@ class AnswerViewSet(viewsets.ModelViewSet):
     )
 
     def get_permissions(self):
-        if self.action in ("update", "destroy"):
-            permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+        if self.action == 'update':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'destroy':
+            permission_classes = [IsAuthenticated,IsOwnerOrReadOnly]
         elif self.action == "create":
             permission_classes = [IsAuthenticated]
         else:
@@ -62,6 +64,33 @@ class AnswerViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action in ['update', 'partial_update']:
+            return UpdateAnswerSerializer
+
+        return AnswerSerializer
+
+    def update(self, request, *args, **kwargs):
+        answer = self.get_object()
+        if answer.question.user != request.user:
+            return Response(
+                {"detail": "You don't have permission to update this answer."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        if 'isCorrect' in request.data and request.data['isCorrect']:
+            answer.isCorrect = True
+            answer.user.correct_answers += 1
+            answer.user.rating += 1
+            answer.user.save()
+
+
+        serializer = self.get_serializer(answer, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+
+        return Response(serializer.data)
 
 
 @extend_schema(tags=["Searchi"])

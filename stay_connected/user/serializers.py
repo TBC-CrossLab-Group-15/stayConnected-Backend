@@ -45,6 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'id', 'first_name', 'last_name', 'email', 'password', 'confirm_password')
+        read_only_fields = ['rating','correct_answers']
 
     def validate_first_name(self, value):
         if not re.match(r'^[A-Za-z]+$', value):
@@ -90,3 +91,8 @@ class UserStatSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username')
+
+class UserLeaderBoardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("username", "rating",)
