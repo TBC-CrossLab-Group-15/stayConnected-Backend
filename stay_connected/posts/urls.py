@@ -4,8 +4,8 @@ from posts.views import CreateQuestionViewset, TagListing, AnswerViewSet
 from posts.views import QuestionList
 
 router = DefaultRouter()
-router.register(r'/questions', CreateQuestionViewset)
-router.register('/answers', AnswerViewSet)
+router.register(r'questions', CreateQuestionViewset)
+router.register('answers', AnswerViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
