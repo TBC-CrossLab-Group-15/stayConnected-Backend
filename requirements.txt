@@ -31,7 +31,6 @@ pillow==11.0.0
 polib==1.2.0
 psycopg2-binary==2.9.10
 PyJWT==2.10.0
-PyPDF2==3.0.1
 python-decouple==3.8
 pytz==2024.2
 PyYAML==6.0.2
