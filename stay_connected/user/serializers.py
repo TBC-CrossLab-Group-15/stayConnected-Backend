@@ -4,11 +4,6 @@ from user.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        write_only=True,
-        error_messages={"required": "Username is required."}
-    )
-
     password = serializers.CharField(
         write_only=True,
         min_length=8,
@@ -44,8 +39,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'id', 'first_name', 'last_name', 'email', 'password', 'confirm_password')
-        read_only_fields = ['rating','correct_answers']
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'confirm_password')
+        read_only_fields = ['rating','answers']
 
     def validate_first_name(self, value):
         if not re.match(r'^[A-Za-z]+$', value):
@@ -73,7 +68,6 @@ class UserSerializer(serializers.ModelSerializer):
         # Remove confirm_password from validated_data
         validated_data.pop('confirm_password')
         user = User.objects.create_user(
-            username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
@@ -83,16 +77,21 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.CharField()
     password = serializers.CharField()
 
 
 class UserStatSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username')
+        fields = ('id', 'first_name', 'last_name')
+
+class UserRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'rating', 'answers')
 
 class UserLeaderBoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("username", "rating",)
+        fields = ("first_name", "last_name", "rating",)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from user.serializers import UserStatSerializer
-from posts.models import Question, Tag, Answer, Like
+from posts.models import Question, Tag, Answer
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -33,23 +33,23 @@ class CreateAnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ['text', 'question']
 
-class LikeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Like
-        fields = ['user', 'like_status']
-        read_only_fields = ['answer']
+# class LikeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Like
+#         fields = ['user', 'like_status']
+#         read_only_fields = ['answer']
 
 class AnswerSerializer(serializers.ModelSerializer):
     user = UserStatSerializer()
-    likes = LikeSerializer(many=True, read_only=True)
+    # likes = LikeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Answer
-        fields = ['id', 'text', 'isCorrect', 'user', 'question', 'create_date', 'likes','likes_count']
+        fields = ['id', 'text', 'isCorrect', 'user', 'question', 'create_date']
 
-    def get_likes_count(self, obj):
-        # Count the number of likes for this answer
-        return Like.objects.filter(answer=obj, like_status=1).count()
+    # def get_likes_count(self, obj):
+    #     # Count the number of likes for this answer
+    #     return Like.objects.filter(answer=obj, like_status=1).count()
 
 class UpdateAnswerSerializer(serializers.ModelSerializer):
     isCorrect = serializers.BooleanField(default=False)
