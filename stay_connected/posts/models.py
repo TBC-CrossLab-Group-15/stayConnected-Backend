@@ -34,6 +34,9 @@ class Answer(models.Model):
     def __str__(self):
         return self.text[:25]
 
+    class Meta:
+        ordering = ['-isCorrect']
+
     # def update_likes_count(self):
     #     """Update the likes count based on the associated Likes model."""
     #     self.likes_count = Like.objects.filter(answer=self, like_status=1).count()

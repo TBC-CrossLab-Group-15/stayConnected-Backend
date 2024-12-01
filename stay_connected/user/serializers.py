@@ -89,7 +89,7 @@ class UserStatSerializer(serializers.ModelSerializer):
 class UserRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'rating', 'answers')
+        fields = ('first_name', 'last_name', 'email', 'rating', 'my_answers')
 
 class UserLeaderBoardSerializer(serializers.ModelSerializer):
     class Meta:
