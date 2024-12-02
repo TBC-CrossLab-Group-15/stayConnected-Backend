@@ -88,9 +88,10 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class UserStatSerializer(serializers.ModelSerializer):
+    avatar = AvatarSerializer()
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name')
+        fields = ('id', 'avatar', 'first_name', 'last_name')
 
 
 class UserRetrieveSerializer(serializers.ModelSerializer):
