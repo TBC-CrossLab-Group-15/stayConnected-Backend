@@ -1,15 +1,19 @@
 from django.contrib.auth import authenticate, login
 from rest_framework import status, generics, filters
 from rest_framework.decorators import permission_classes, api_view
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from user.serializers import UserSerializer, UserLoginSerializer, UserLeaderBoardSerializer, UserRetrieveSerializer
+
+from posts.serializer_utils import SerializerFactory
+from user.serializers import UserSerializer, UserLoginSerializer, UserLeaderBoardSerializer, UserRetrieveSerializer, \
+    AvatarSerializer, UpdateUserAvatar
 from drf_spectacular.utils import extend_schema
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 from rest_framework.viewsets import GenericViewSet
-from user.models import User
+from user.models import User, Avatar
 
 
 # Create your views here.
@@ -72,9 +76,28 @@ class UserListView(generics.ListAPIView):
 
 
 @extend_schema(tags=["User"])
-class RetrieveUser(RetrieveModelMixin, GenericViewSet):
-    serializer_class = UserRetrieveSerializer
+class RetrieveUser(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+    serializer_class = SerializerFactory(
+        retrieve=UserRetrieveSerializer,
+        update=UpdateUserAvatar,
+        update_partial=UpdateUserAvatar,
+        default=UserRetrieveSerializer
+    )
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return User.objects.filter(id=self.request.user.id)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=self.request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
+
+@extend_schema(tags=["Avatars"])
+class AvatarListing(ListAPIView):
+    serializer_class = AvatarSerializer
+    queryset = Avatar.objects.all()
+    permission_classes = [AllowAny]

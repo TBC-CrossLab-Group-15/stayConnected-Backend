@@ -1,6 +1,12 @@
 from django.contrib import admin
+from user.models import User, Avatar
 
-from user.models import User
 
-# Register your models here.
-admin.site.register(User)
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Avatar)
+class AvatarAdmin(admin.ModelAdmin):
+    pass

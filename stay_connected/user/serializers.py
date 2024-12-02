@@ -1,6 +1,6 @@
 import re
 from rest_framework import serializers
-from user.models import User
+from user.models import User, Avatar
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'email', 'password', 'confirm_password')
-        read_only_fields = ['rating','answers']
+        read_only_fields = ['rating', 'answers']
 
     def validate_first_name(self, value):
         if not re.match(r'^[A-Za-z]+$', value):
@@ -76,6 +76,12 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Avatar
+        fields = '__all__'
+
+
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.CharField()
     password = serializers.CharField()
@@ -86,12 +92,27 @@ class UserStatSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'first_name', 'last_name')
 
+
 class UserRetrieveSerializer(serializers.ModelSerializer):
+    avatar = AvatarSerializer()
+
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'rating', 'my_answers')
+        fields = ('avatar', 'first_name', 'last_name', 'email', 'rating', 'my_answers')
+
+class UpdateUserAvatar(serializers.ModelSerializer):
+    avatar_id = serializers.PrimaryKeyRelatedField(
+        many=False,
+        queryset=Avatar.objects.all()
+    )
+    class Meta:
+        model = User
+        fields = ['avatar_id']
+
 
 class UserLeaderBoardSerializer(serializers.ModelSerializer):
+    avatar = AvatarSerializer()
+
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "rating",)
+        fields = ('avatar', "first_name", "last_name", "rating",)

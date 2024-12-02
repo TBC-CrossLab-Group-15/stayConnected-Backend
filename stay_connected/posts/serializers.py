@@ -12,7 +12,7 @@ class TagSerializer(serializers.ModelSerializer):
 class CreateQuestionSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Tag.objects.all().filter()
+        queryset=Tag.objects.all()
     )
     user = serializers.StringRelatedField(read_only=True)
 
