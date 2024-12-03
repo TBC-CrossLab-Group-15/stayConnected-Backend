@@ -1,0 +1,30 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: |
+      echo "Runner Docker Image Build..."
+      docker compose build
+
+    - name: Cleanup
+      run: |
+      echo "Runner Deleting unused containers..."
+      docker compose down && docker compose up -d && docker image prune -af
+
+    - name: Deploy
+      run: |
+      echo "Pushing and Deploying..."
+      ssh root@app01.ams.stayconnected.lol "git pull && docker compose down && docker compose up -d && docker image prune -af"
