@@ -1,7 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .views import RegisterView, LoginView, RefreshTokenCustomView, UserListView, RetrieveUser, AvatarListing
+from .views import RegisterView, LoginView, RefreshTokenCustomView, UserListView, RetrieveUser, AvatarListing, \
+    UserInfoView
 
 router = DefaultRouter()
 
@@ -13,5 +14,6 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("token/refresh/", RefreshTokenCustomView.as_view(), name="token_refresh"),
     path("leaderboard/",UserListView.as_view(), name='leaderboard'),
-    path("avatars/", AvatarListing.as_view(), name='avatars')
+    path("avatars/", AvatarListing.as_view(), name='avatars'),
+    path("currentuser/",UserInfoView.as_view(), name='currentuser')
 ]

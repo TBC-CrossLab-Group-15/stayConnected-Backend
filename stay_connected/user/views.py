@@ -6,7 +6,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
 from posts.serializer_utils import SerializerFactory
 from user.serializers import UserSerializer, UserLoginSerializer, UserLeaderBoardSerializer, UserRetrieveSerializer, \
     AvatarSerializer, UpdateUserAvatar
@@ -76,7 +75,7 @@ class UserListView(generics.ListAPIView):
 
 
 @extend_schema(tags=["User"])
-class RetrieveUser(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+class RetrieveUser(UpdateModelMixin, GenericViewSet):
     serializer_class = SerializerFactory(
         retrieve=UserRetrieveSerializer,
         update=UpdateUserAvatar,
@@ -87,6 +86,8 @@ class RetrieveUser(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
 
     def get_queryset(self):
         return User.objects.filter(id=self.request.user.id)
+
+
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -101,3 +102,13 @@ class AvatarListing(ListAPIView):
     serializer_class = AvatarSerializer
     queryset = Avatar.objects.all()
     permission_classes = [AllowAny]
+
+
+@extend_schema(tags=['User'])
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = UserRetrieveSerializer(user)
+        return Response(serializer.data)
