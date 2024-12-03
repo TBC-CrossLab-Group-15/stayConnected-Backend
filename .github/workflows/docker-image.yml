@@ -13,18 +13,24 @@ jobs:
     runs-on: self-hosted
 
     steps:
+    - name: Fix Workspace Permissions
+      run: |
+        echo "Runner / Fix Repo Permissions"
+        sudo chown -R $USER:$USER /home/github/actions-runner/_work/stayConnected-Backend/
+        sudo chmod -R u+rwX /home/github/actions-runner/_work/stayConnected-Backend/
+    
     - uses: actions/checkout@v4
     - name: Build
       run: |
-        echo "Runner Docker Image Build..."
+        echo "Runner / Docker Image Build..."
         docker compose build
 
     - name: Cleanup
       run: |
-        echo "Runner Deleting unused containers..."
+        echo "Runner / Deleting unused containers..."
         docker compose down && docker compose up -d && docker image prune -af
 
     - name: Deploy
       run: |
-        echo "Pushing and Deploying..."
+        echo "Prod / Pushing and Deploying..."
         ssh -oStrictHostKeyChecking=no root@app01.prod.stayconnected.lol "git pull && docker compose down && docker compose up -d && docker image prune -af"
