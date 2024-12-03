@@ -27,4 +27,4 @@ jobs:
     - name: Deploy
       run: |
         echo "Pushing and Deploying..."
-        ssh root@app01.ams.stayconnected.lol "git pull && docker compose down && docker compose up -d && docker image prune -af"
+        ssh root@app01.prod.stayconnected.lol "git pull && docker compose down && docker compose up -d && docker image prune -af"
