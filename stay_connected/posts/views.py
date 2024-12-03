@@ -101,3 +101,12 @@ class QuestionList(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['tags__name']
     permission_classes = [AllowAny]
+
+
+@extend_schema(tags=["Searchi"])
+class QuestionTextList(generics.ListAPIView):
+    queryset = Question.objects.all()
+    serializer_class = ListQuestionSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['text','title']
+    permission_classes = [AllowAny]
