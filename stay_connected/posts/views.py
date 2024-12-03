@@ -108,5 +108,5 @@ class QuestionTextList(generics.ListAPIView):
     queryset = Question.objects.all()
     serializer_class = ListQuestionSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['text','title']
+    search_fields = ['text', 'title']
     permission_classes = [AllowAny]

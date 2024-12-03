@@ -87,8 +87,6 @@ class RetrieveUser(UpdateModelMixin, GenericViewSet):
     def get_queryset(self):
         return User.objects.filter(id=self.request.user.id)
 
-
-
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
@@ -96,6 +94,7 @@ class RetrieveUser(UpdateModelMixin, GenericViewSet):
         serializer.save()
 
         return Response(serializer.data)
+
 
 @extend_schema(tags=["Avatars"])
 class AvatarListing(ListAPIView):
