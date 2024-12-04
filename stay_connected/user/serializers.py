@@ -80,7 +80,6 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
 
-
 class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Avatar
@@ -93,17 +92,13 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class UserStatSerializer(serializers.ModelSerializer):
-    avatar = AvatarSerializer()
-
     class Meta:
         model = User
         fields = ('id', 'avatar', 'first_name', 'last_name')
 
 
 class UserRetrieveSerializer(serializers.ModelSerializer):
-    avatar = AvatarSerializer()
-
-    class Meta:
+   class Meta:
         model = User
         fields = ('avatar', 'first_name', 'last_name', 'email', 'rating', 'my_answers')
 
@@ -120,8 +115,6 @@ class UpdateUserAvatar(serializers.ModelSerializer):
 
 
 class UserLeaderBoardSerializer(serializers.ModelSerializer):
-    avatar = AvatarSerializer()
-
     class Meta:
         model = User
         fields = ('avatar', "first_name", "last_name", "rating",)
