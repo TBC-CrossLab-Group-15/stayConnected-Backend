@@ -7,6 +7,7 @@ from posts.serializers import TagSerializer, CreateAnswerSerializer, AnswerSeria
 from rest_framework.decorators import action, permission_classes
 from posts.models import Question, Tag, Answer
 from rest_framework.response import Response
+from .pagination import CustomPageNumberPagination
 from .permissions import IsOwnerOrReadOnly
 from .serializer_utils import SerializerFactory
 
@@ -20,6 +21,7 @@ class CreateQuestionViewset(viewsets.ModelViewSet):
         default=ListQuestionSerializer
     )
     queryset = Question.objects.select_related('user').prefetch_related('tags')
+    pagination_class = CustomPageNumberPagination
 
     def get_permissions(self):
         if self.action in ("update", "destroy"):
