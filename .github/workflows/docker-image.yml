@@ -27,8 +27,6 @@ jobs:
       run: |
         docker compose down &&
         docker compose up -d &&
-        sleep 5 &&
-        docker compose ps --filter status=running | grep -q "prod" && echo "containers are running" \
         docker image prune -af
 
     - name: Deploy to Production Server
@@ -39,6 +37,4 @@ jobs:
         && docker compose build \
         && docker compose down \
         && docker compose up -d \
-        && sleep 5 \
-        docker compose ps --filter status=running | grep -q "prod" && echo "containers are running" \
         && docker image prune -af"
