@@ -1,11 +1,11 @@
 version: "3.9"
 
 services:
-  staycon-back-dev:
+  staycon-back-prod:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: staycon-back-dev
+    container_name: staycon-back-prod
     command: python stay_connected/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app

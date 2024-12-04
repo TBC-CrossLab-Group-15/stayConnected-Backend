@@ -52,6 +52,11 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Last name must only consist of latin letters.")
         return value
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already registered.")
+        return value
+
     def validate_password(self, value):
         if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', value):
             raise serializers.ValidationError(
@@ -89,6 +94,7 @@ class UserLoginSerializer(serializers.Serializer):
 
 class UserStatSerializer(serializers.ModelSerializer):
     avatar = AvatarSerializer()
+
     class Meta:
         model = User
         fields = ('id', 'avatar', 'first_name', 'last_name')
@@ -101,11 +107,13 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
         model = User
         fields = ('avatar', 'first_name', 'last_name', 'email', 'rating', 'my_answers')
 
+
 class UpdateUserAvatar(serializers.ModelSerializer):
     avatar_id = serializers.PrimaryKeyRelatedField(
         many=False,
         queryset=Avatar.objects.all()
     )
+
     class Meta:
         model = User
         fields = ['avatar_id']

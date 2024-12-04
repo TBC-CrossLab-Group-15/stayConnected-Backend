@@ -1,0 +1,40 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - name: Runner / Fix Repo Permissions
+      run: |
+        sudo chown -R $USER:$USER /home/github/actions-runner/_work/stayConnected-Backend/
+        sudo chmod -R u+rwX /home/github/actions-runner/_work/stayConnected-Backend/
+    
+    - uses: actions/checkout@v4
+    - name: Runner / Docker Image Build
+      run: |
+        docker compose build
+
+    - name: Runner / Check Containers and Clean Up
+      run: |
+        docker compose down &&
+        docker compose up -d &&
+        docker image prune -af
+
+    - name: Deploy to Production Server
+      run: |
+        ssh -oStrictHostKeyChecking=no root@app01.prod.stayconnected.lol "
+        cd ~/stayConnected-Backend/ \
+        && git pull \
+        && docker compose build \
+        && docker compose down \
+        && docker compose up -d \
+        && docker image prune -af"

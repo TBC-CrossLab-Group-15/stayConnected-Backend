@@ -33,6 +33,7 @@ class CreateAnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ['text', 'question']
 
+
 # class LikeSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Like
@@ -41,6 +42,7 @@ class CreateAnswerSerializer(serializers.ModelSerializer):
 
 class AnswerSerializer(serializers.ModelSerializer):
     user = UserStatSerializer()
+
     # likes = LikeSerializer(many=True, read_only=True)
 
     class Meta:
@@ -51,11 +53,14 @@ class AnswerSerializer(serializers.ModelSerializer):
     #     # Count the number of likes for this answer
     #     return Like.objects.filter(answer=obj, like_status=1).count()
 
+
 class UpdateAnswerSerializer(serializers.ModelSerializer):
     isCorrect = serializers.BooleanField(default=False)
+
     class Meta:
         model = Answer
         fields = ['isCorrect']
+
 
 class ListQuestionSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)

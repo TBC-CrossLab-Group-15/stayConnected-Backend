@@ -3,6 +3,7 @@ from rest_framework import status, generics, filters
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -58,6 +59,13 @@ def login_user(request):
 class LoginView(TokenObtainPairView):
     serializer_class = TokenObtainPairView.serializer_class
 
+    def post(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        response = super().post(request, *args, **kwargs)
+        response.data['user_id'] = serializer.user.id
+        return response
+
 
 @extend_schema(tags=["Auth"])
 class RefreshTokenCustomView(TokenRefreshView):
@@ -87,8 +95,6 @@ class RetrieveUser(UpdateModelMixin, GenericViewSet):
     def get_queryset(self):
         return User.objects.filter(id=self.request.user.id)
 
-
-
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
@@ -96,6 +102,7 @@ class RetrieveUser(UpdateModelMixin, GenericViewSet):
         serializer.save()
 
         return Response(serializer.data)
+
 
 @extend_schema(tags=["Avatars"])
 class AvatarListing(ListAPIView):

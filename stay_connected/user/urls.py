@@ -13,7 +13,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path("login/", LoginView.as_view(), name="login"),
     path("token/refresh/", RefreshTokenCustomView.as_view(), name="token_refresh"),
-    path("leaderboard/",UserListView.as_view(), name='leaderboard'),
+    path("leaderboard/", UserListView.as_view(), name='leaderboard'),
     path("avatars/", AvatarListing.as_view(), name='avatars'),
-    path("currentuser/",UserInfoView.as_view(), name='currentuser')
+    path("currentuser/", UserInfoView.as_view(), name='currentuser')
 ]

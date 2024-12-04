@@ -2,7 +2,6 @@ from django.contrib import admin
 from posts.models import Question, Tag, Answer
 
 
-
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     pass

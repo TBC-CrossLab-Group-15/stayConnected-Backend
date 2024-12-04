@@ -13,6 +13,7 @@ class Avatar(models.Model):
     class Meta:
         ordering = ["name"]
 
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True)
@@ -29,4 +30,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
