@@ -20,7 +20,7 @@ class CreateQuestionViewset(viewsets.ModelViewSet):
         list=ListQuestionSerializer,
         default=ListQuestionSerializer
     )
-    queryset = Question.objects.select_related('user').prefetch_related('tags')
+    queryset = Question.objects.select_related('user').prefetch_related('tags').order_by("-create_date")
     pagination_class = CustomPageNumberPagination
 
     def get_permissions(self):
