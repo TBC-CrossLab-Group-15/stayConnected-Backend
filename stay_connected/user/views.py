@@ -16,6 +16,9 @@ from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 from rest_framework.viewsets import GenericViewSet
 from user.models import User, Avatar
 
+from posts.serializers import ListQuestionSerializer
+from posts.models import Question
+
 
 # Create your views here.
 @extend_schema(tags=["Auth"])
@@ -137,3 +140,12 @@ class UserInfoView(APIView):
         user = request.user
         serializer = UserRetrieveSerializer(user)
         return Response(serializer.data)
+
+
+@extend_schema(tags=["User"])
+class CurrentUserQuestions(ListAPIView):
+    serializer_class = ListQuestionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Question.objects.filter(user=self.request.user)
