@@ -90,6 +90,8 @@ class UserLoginSerializer(serializers.Serializer):
     email = serializers.CharField()
     password = serializers.CharField()
 
+class UserLogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
 
 class UserStatSerializer(serializers.ModelSerializer):
     class Meta:

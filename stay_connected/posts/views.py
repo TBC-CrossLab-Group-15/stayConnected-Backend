@@ -78,12 +78,12 @@ class AnswerViewSet(viewsets.ModelViewSet):
                 {"detail": "You don't have permission to update this answer."},
                 status=status.HTTP_403_FORBIDDEN
             )
-        if 'isCorrect' in request.data and request.data['isCorrect'] == True:
+        if 'isCorrect' in request.data and request.data['isCorrect'] == True and answer.isCorrect == False:
             answer.isCorrect = True
             answer.user.rating += 1
             answer.save()
             answer.user.save()
-        else:
+        elif answer.isCorrect:
             answer.isCorrect = False
             answer.user.rating -= 1
             answer.save()
