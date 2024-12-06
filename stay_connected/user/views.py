@@ -148,4 +148,4 @@ class CurrentUserQuestions(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Question.objects.filter(user=self.request.user)
+        return Question.objects.filter(user=self.request.user).select_related('user').prefetch_related('tags')
