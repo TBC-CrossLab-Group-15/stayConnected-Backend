@@ -98,7 +98,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
 
 @extend_schema(tags=["Searchi"])
 class QuestionList(generics.ListAPIView):
-    queryset = Question.objects.all()
+    queryset = Question.objects.select_related('user').prefetch_related('tags').order_by('-create_date')
     serializer_class = ListQuestionSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['tags__name']
@@ -107,8 +107,18 @@ class QuestionList(generics.ListAPIView):
 
 @extend_schema(tags=["Searchi"])
 class QuestionTextList(generics.ListAPIView):
-    queryset = Question.objects.all()
+    queryset = Question.objects.select_related('user').prefetch_related('tags').order_by('-create_date')
     serializer_class = ListQuestionSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['text', 'title']
     permission_classes = [AllowAny]
+
+@extend_schema(tags=["Postebi"])
+class MyQuestionList(generics.ListAPIView):
+    queryset = Question.objects.select_related('user').prefetch_related('tags').order_by('-create_date')
+    serializer_class = ListQuestionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+

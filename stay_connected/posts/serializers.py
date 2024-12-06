@@ -69,4 +69,4 @@ class ListQuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = "__all__"
+        fields = ['id', 'title', 'text', 'tags', 'user', 'create_date', 'answers']

@@ -95,7 +95,7 @@ class RefreshTokenCustomView(TokenRefreshView):
 
 @extend_schema(tags=["Leaderboard"])
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.select_related('avatar')
     serializer_class = UserLeaderBoardSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['rating']
