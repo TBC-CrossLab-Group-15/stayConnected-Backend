@@ -28,7 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
-    "stayconnected.lol"
+    "stayconnected.lol",
+    "127.0.0.1"
 ]
 
 INTERNAL_IPS = [
@@ -167,7 +168,7 @@ LOGGING = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tbilisi'
 
 USE_I18N = True
 
