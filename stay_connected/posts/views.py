@@ -83,9 +83,10 @@ class AnswerViewSet(viewsets.ModelViewSet):
             answer.user.rating += 1
             answer.save()
             answer.user.save()
-        elif answer.isCorrect:
+        elif answer.isCorrect and request.data['isCorrect'] == False:
             answer.isCorrect = False
-            answer.user.rating -= 1
+            if answer.user.rating>0:
+                answer.user.rating -= 1
             answer.save()
             answer.user.save()
 
