@@ -32,7 +32,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          python stay_connected/stay_connected/manage.py test
+          python stay_connected/manage.py test
 
       - name: Build Docker Images
         run: |
