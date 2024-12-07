@@ -35,7 +35,7 @@ class Answer(models.Model):
         return self.text[:25]
 
     class Meta:
-        ordering = ['-isCorrect']
+        ordering = ['-isCorrect','-create_date']
 
     # def update_likes_count(self):
     #     """Update the likes count based on the associated Likes model."""
