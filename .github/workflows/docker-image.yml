@@ -31,12 +31,19 @@ jobs:
         docker builder prune 
 
     - name: Deploy to Production Server
+      env:
+        SSH_SERVER: ${{ env.SSH_SERVER }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        DEPLOY_DIR: ${{ env.DEPLOY_DIR }}
+
       run: |
-        ssh -oStrictHostKeyChecking=no root@app01.prod.stayconnected.lol "
-        cd ~/stayConnected-Backend/ \
+        echo "${SSH_PRIVATE_KEY}" > /tmp/id_ed25519 && chmod 600 id_ed25519 \
+        ssh -i /tmp/id_ed25519 -oStrictHostKeyChecking=no root@$SSH_SERVER "
+        cd $DEPLOY_DIR \
         && git pull \
         && docker compose build \
         && docker compose down \
         && docker compose up -d \
         && docker image prune -af \
-        && docker builder prune -af"
+        && docker builder prune -af \
+        && rm -f /tmp/id_ed25519"
