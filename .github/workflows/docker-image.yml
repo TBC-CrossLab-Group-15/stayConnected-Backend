@@ -38,10 +38,10 @@ jobs:
         DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
 
       run: |
-        echo "${SSH_PRIVATE_KEY}" > /tmp/id_ed25519
-        chmod 600 /tmp/id_ed25519
+        echo "${SSH_PRIVATE_KEY}" > ~/id_ed25519
+        chmod 600 ~/id_ed25519
         # Connect to the SSH server and execute deployment commands
-        ssh -i /tmp/id_ed25519 -o StrictHostKeyChecking=no root@$SSH_SERVER "
+        ssh -i ~/id_ed25519 -o StrictHostKeyChecking=no root@$SSH_SERVER "
           cd $DEPLOY_DIR &&
           git pull &&
           docker compose build &&
@@ -49,5 +49,5 @@ jobs:
           docker compose up -d &&
           docker image prune -af &&
           docker builder prune -af &&
-          rm -f /tmp/id_ed25519
         "
+        rm -f ~/id_ed25519
