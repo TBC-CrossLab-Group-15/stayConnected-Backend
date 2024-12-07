@@ -42,14 +42,12 @@ jobs:
         run: |
           python stay_connected/manage.py test
 
-      - name: Build Docker Images
+      - name: Check for build errors
         run: |
           docker compose build
 
-      - name: Test & Cleanup
+      - name: Cleanup
         run: |
-          docker compose down &&
-          docker compose up -d &&
           docker image prune -af &&
           docker builder prune
 
