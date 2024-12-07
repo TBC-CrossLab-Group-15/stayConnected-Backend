@@ -33,6 +33,12 @@ jobs:
       - name: Run Django Test
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT_DEV }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          
         run: |
           python stay_connected/manage.py test
 
