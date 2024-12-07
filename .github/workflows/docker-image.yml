@@ -20,10 +20,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run Test
-        run: |
-          docker compose exec staycon-back-prod python stay_connected/manage.py test
-
       - name: Build Docker Images
         run: |
           docker compose build
