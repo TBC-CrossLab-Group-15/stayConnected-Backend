@@ -7,47 +7,63 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
+    name: Build Docker Images
     runs-on: self-hosted
 
     steps:
-    - name: Runner / Fix Repo Permissions
-      run: |
-        sudo chown -R $USER:$USER /home/github/actions-runner/_work/stayConnected-Backend/
-        sudo chmod -R u+rwX /home/github/actions-runner/_work/stayConnected-Backend/
-    
-    - uses: actions/checkout@v4
-    
-    - name: Runner / Docker Image Build
-      run: |
-        docker compose build
-    
-    - name: Runner / Check Containers and Clean Up
-      run: |
-        docker compose down &&
-        docker compose up -d &&
-        docker image prune -af &&
-        docker builder prune 
-    
-    - name: Deploy to Production Server
-      env:
-        SSH_SERVER: ${{ vars.SSH_SERVER }}
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
+      - name: Fix Repo Permissions
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}
+          sudo chmod -R u+rwX ${{ github.workspace }}
 
-      run: |
-        echo "${SSH_PRIVATE_KEY}" > ~/id_ed25519
-        chmod 600 ~/id_ed25519
-        # Connect to the SSH server and execute deployment commands
-        ssh -i ~/id_ed25519 -o StrictHostKeyChecking=no root@$SSH_SERVER "
-          cd $DEPLOY_DIR &&
-          git pull &&
-          docker compose build &&
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker Images
+        run: |
+          docker compose build
+
+      - name: Test & Cleanup
+        run: |
           docker compose down &&
           docker compose up -d &&
           docker image prune -af &&
-          docker builder prune -af
-        "
-        rm -f ~/id_ed25519
+          docker builder prune
+
+  deploy:
+    name: Deploy to Production Server
+    needs: build
+    runs-on: self-hosted
+    environment:
+      name: production
+      url: https://stayconnected.lol/api/swagger
+
+    env:
+      SSH_SERVER: ${{ vars.SSH_SERVER }}
+      DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    steps:
+      - name: Setup SSH Key
+        run: |
+          set -e  # Exit immediately if a non-zero status
+          echo "${SSH_PRIVATE_KEY}" > ~/id_ed25519
+          chmod 600 ~/id_ed25519
+
+      - name: Deploy via SSH
+        run: |
+          ssh -i ~/id_ed25519 -o StrictHostKeyChecking=no root@${SSH_SERVER} "
+            cd ${DEPLOY_DIR} &&
+            git pull &&
+            docker compose build &&
+            docker compose down &&
+            docker compose up -d &&
+            docker image prune -af &&
+            docker builder prune -af
+          "
+
+      - name: Cleanup SSH Key
+        run: |
+          # Runner SSH private key remove
+          rm -f ~/id_ed25519
