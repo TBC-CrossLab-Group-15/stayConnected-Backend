@@ -19,17 +19,18 @@ jobs:
         sudo chmod -R u+rwX /home/github/actions-runner/_work/stayConnected-Backend/
     
     - uses: actions/checkout@v4
+    
     - name: Runner / Docker Image Build
       run: |
         docker compose build
-
+    
     - name: Runner / Check Containers and Clean Up
       run: |
         docker compose down &&
         docker compose up -d &&
         docker image prune -af &&
         docker builder prune 
-
+    
     - name: Deploy to Production Server
       env:
         SSH_SERVER: ${{ env.SSH_SERVER }}
@@ -37,13 +38,16 @@ jobs:
         DEPLOY_DIR: ${{ env.DEPLOY_DIR }}
 
       run: |
-        echo "${SSH_PRIVATE_KEY}" > /tmp/id_ed25519 && chmod 600 id_ed25519 \
-        ssh -i /tmp/id_ed25519 -oStrictHostKeyChecking=no root@$SSH_SERVER "
-        cd $DEPLOY_DIR \
-        && git pull \
-        && docker compose build \
-        && docker compose down \
-        && docker compose up -d \
-        && docker image prune -af \
-        && docker builder prune -af \
-        && rm -f /tmp/id_ed25519"
+        echo "${SSH_PRIVATE_KEY}" > /tmp/id_ed25519
+        chmod 600 /tmp/id_ed25519
+        # Connect to the SSH server and execute deployment commands
+        ssh -i /tmp/id_ed25519 -o StrictHostKeyChecking=no root@$SSH_SERVER "
+          cd $DEPLOY_DIR &&
+          git pull &&
+          docker compose build &&
+          docker compose down &&
+          docker compose up -d &&
+          docker image prune -af &&
+          docker builder prune -af &&
+          rm -f /tmp/id_ed25519
+        "
