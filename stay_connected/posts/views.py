@@ -102,7 +102,7 @@ class QuestionList(generics.ListAPIView):
     queryset = Question.objects.select_related('user').prefetch_related('tags').order_by('-create_date')
     serializer_class = ListQuestionSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['=tags__name']
+    search_fields = ['tags__name']
     permission_classes = [AllowAny]
 
 
